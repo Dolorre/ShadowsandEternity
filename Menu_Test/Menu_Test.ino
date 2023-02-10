@@ -21,7 +21,6 @@ void setup() {
 void loop() {
   if (!(arduboy.nextFrame())) return;
   arduboy.pollButtons();
-  arduboy.clear();
   ((FunctionPointer) pgm_read_word (&mainGameLoop[gameState]))();
-  arduboy.display();
+  FX::display(CLEAR_BUFFER);
 }
