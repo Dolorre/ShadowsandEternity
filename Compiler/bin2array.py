@@ -2,25 +2,33 @@
 
 # convert BIN GTI files to C++ arrays for Arduino
 
-# NOTE: This will take a while, quite a while depending on the length of the csv file.
-
 import sys
 
 # Source file
-input = "sae.bin"
+input = "SAE.bin"
+# Destination file
+destination = "SAE.txt"
 
 file = open(input,"r")
- 
-print ("const unsigned char gti[] PROGMEM = { ")
 
+compiled = "const unsigned char gti[] PROGMEM = { "
+ 
 col = 0
 
 while 1==1:
    data = file.read(1)
    if data == "": break
-   sys.stdout.write(str(ord(data))+",")
+   compiled = compiled + str(str(ord(data))+",")   
    col = col + 1
    if col == 90000: 
-        sys.stdout.write("\n")
+        compiled = compiled + str("\n")
         col = 0
-print ("};")
+compiled = compiled + str("};")
+
+print ("Compile complete.")
+
+o = open(destination, "w", encoding="utf-8")
+o.write(compiled)
+o.close()
+print ("Written to "+destination+".")
+file.close()
