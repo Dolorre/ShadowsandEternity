@@ -2,6 +2,8 @@
 
 # convert BIN GTI files to C++ arrays for Arduino
 
+# NOTE: This will take a while, quite a while depending on the length of the csv file.
+
 import sys
 
 # Source file
@@ -22,4 +24,3 @@ while 1==1:
         sys.stdout.write("\n")
         col = 0
 print ("};")
-
