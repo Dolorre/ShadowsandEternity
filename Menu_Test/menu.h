@@ -7,7 +7,6 @@
 void drawTitleScreen()
 {
   FX::drawBitmap(x[0],y[0],saeTitle,0,dbmNormal);
-  FX::drawBitmap(x[54],y[1],selectionLine,0,dbmMasked);
 }
 
 void stateMenuIntro()
@@ -19,9 +18,9 @@ void stateMenuIntro()
 void stateMenuMain()
 {
   drawTitleScreen();
-
-  static const uint8_t lineCoordsX[menuOptions] PROGMEM { 63, 63, 63 };
-  static const uint8_t lineCoordsY[menuOptions] PROGMEM { 14, 52, 94 };
+  
+  static const uint8_t lineCoordsX[menuOptions] PROGMEM { 14, 52, 94 };
+  static const uint8_t lineCoordsY[menuOptions] PROGMEM { 62, 62, 62 };
   
   // Read the line coordinates from the progmem arrays
   // (This is usually cheaper than using lots of if statements)
