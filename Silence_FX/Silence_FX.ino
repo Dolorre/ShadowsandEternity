@@ -32,6 +32,7 @@ uint8_t inst = 0;
 uint8_t col = 0;
 uint8_t row = 0;
 uint8_t effect = 0;
+
 uint8_t bt_a = 0;
 uint8_t bt_b = 0;
 
@@ -41,6 +42,7 @@ unsigned char exitb[80] = "";
 void setup() {
   arduboy.begin();
   FX::begin(FX_DATA_PAGE);    // initialise FX chip
+  FX::display(CLEAR_BUFFER);
 }
 
 void loop() {
@@ -49,18 +51,18 @@ startVM(0);
 
 void startVM(uint16_t pc) {
  while(1) {  
-  FX::seekData(gti + pc);
+  FX::seekData(gti + pc);                                                                         // Search for selected byte
   bt_a = FX::readPendingUInt8();
   bt_b = FX::readEnd();
-  //bt_b = FX::readPendingLastUInt8();
-  //uint16_t type = (pgm_read_byte_near(&(gti[pc])) << 8) | (pgm_read_byte_near(&(gti[pc+1])) & 0xFF);  // Read in type of frame
+  //NEW
   uint16_t type = ((bt_a & 0xFF) << 8) | ((bt_b & 0xFF) << 0);                                    // Read in type of frame
   pc++;                                                                                           // bump program counter
   col = 0;                                                                                        // reset columns in text display
   if(type == 65535) {                                                                             // SPECIAL Frame Detected
      pc++;                                                                                        // bump program counter
-     //uint8_t mode = pgm_read_byte_near(&(gti[pc]));                                               // get the special packet mode
-     uint8_t mode = bt_a;                                                                           // get the special packet mode
+     //NEW
+     FX::seekData(gti + pc);                                                                      // Search for selected byte
+     uint8_t mode = FX::readEnd();                                                                // get the special packet mode
      
      switch (mode) {                                                                              // switch based on what mode the frame is
 
@@ -69,8 +71,9 @@ void startVM(uint16_t pc) {
        case 0:                                                                                    // Game Over handler
            while(1) {                                                                             // loop over text until we hit a null
              pc++;                                                                                // bump program counter
-             //uint8_t buff = pgm_read_byte_near(&(gti[pc]));                                       // read a chracter
-             uint8_t buff = bt_a;                                                                   // read a chracter
+             //NEW
+             FX::seekData(gti + pc);                                                              // Search for selected byte
+             uint8_t buff = FX::readEnd();                                                        // read a chracter
              printer(buff);                                                                       // print out the text using our text output handler
              if(buff == 0) { break; }                                                             // is it a null? then we are done printing text
            }
@@ -87,7 +90,10 @@ void startVM(uint16_t pc) {
            
        case 5:                                                                                    // Jump handler
            pc++;                                                                                  // bump the program counter
-           //pc = (pgm_read_byte_near(&(gti[pc])) << 8) | (pgm_read_byte_near(&(gti[pc+1])) & 0xFF);    // Set the program counter to the address in 16 bit field
+           //NEW
+           FX::seekData(gti + pc);                                                                // Search for selected byte
+           bt_a = FX::readPendingUInt8();
+           bt_b = FX::readEnd();
            pc = ((bt_a & 0xFF) << 8) | ((bt_b & 0xFF) << 0);                                      // Set the program counter to the address in 16 bit field
            break;                                                                                 // switch break
            
@@ -137,8 +143,9 @@ void startVM(uint16_t pc) {
        case 16:                                                                                   // text handler
            while(1) {                                                                             // print some text until we find a null
              pc++;                                                                                // Bump program counter
-             //uint8_t buff = pgm_read_byte_near(&(gti[pc]));                                       // Read a character
-             uint8_t buff = bt_a;                                                                   // Read a character
+             //NEW
+             FX::seekData(gti + pc);                                                              // Search for selected byte
+             uint8_t buff = FX::readEnd();                                                        // Read a character
              printer(buff);                                                                       // Send text off to our printer 
              if(buff == 0) { break; }                                                             // Is it null? then break out of loop
            }         
@@ -156,13 +163,17 @@ void startVM(uint16_t pc) {
      // Jump A description buffer
     
       pc++;                                                                                                   // bump program counter
-      //uint16_t alterexit = (pgm_read_byte_near(&(gti[pc])) << 8) | (pgm_read_byte_near(&(gti[pc+1])) & 0xFF); // get jump b address
+      //NEW
+      FX::seekData(gti + pc);                                                                                 // Search for selected byte
+      bt_a = FX::readPendingUInt8();
+      bt_b = FX::readEnd();
       uint16_t alterexit = ((bt_a & 0xFF) << 8) | ((bt_b & 0xFF) << 0);                                       // get jump b address
       pc++; pc++;                                                                                             // bump program counter
       int i = 0;                                                                                              // initalize i (to keep track of array position)
       while(1 == 1) {                                                                                         // fill jump a description buffer
-        //uint8_t buff = pgm_read_byte_near(&(gti[pc]));                                                        // get a chracter
-        uint8_t buff = bt_a;                                                                                    // get a chracter
+        //NEW
+        FX::seekData(gti + pc);                                                                               // Search for selected byte
+        uint8_t buff = FX::readEnd();                                                                         // get a character
         if(buff == 0) { exita[i] = 0; break; }                                                                // Is it null? append the null to array then stop
         exita[i] = buff;                                                                                      // fill array with newest character
         i++; pc++;                                                                                            // bump array position and program counter
@@ -173,8 +184,9 @@ void startVM(uint16_t pc) {
       pc++;                                                                                                   // bump program counter
       i = 0;                                                                                                  // reset array position
       while(1 == 1) {                                                                                         // fill jump b description buffer 
-        //uint8_t buff = pgm_read_byte_near(&(gti[pc]));                                                        // get a character
-        uint8_t buff = bt_a;                                                                                  // get a character
+        //NEW                                                      
+        FX::seekData(gti + pc);                                                                               // Search for selected byte
+        uint8_t buff = FX::readEnd();                                                                         // get a character
         if(buff == 0) { exitb[i] = 0; break; }                                                                // Is it null? append the null to array then stop
         exitb[i] = buff;                                                                                      // fill array with newest character
         i++; pc++;                                                                                            // bump array position and program counter
@@ -186,8 +198,9 @@ void startVM(uint16_t pc) {
       
       while(1) {                                                                                              // print the main description text, null terminated
              pc++;                                                                                            // bump program counter
-             //uint8_t buff = pgm_read_byte_near(&(gti[pc]));                                                   // get character from main description
-             uint8_t buff = bt_a;                                                                               // get character from main description
+             //NEW                                                 
+             FX::seekData(gti + pc);                                                                          // Search for selected byte
+             uint8_t buff = FX::readEnd();                                                                    // get character from main description
              printer(buff);                                                                                   // Print out our newest character
              if(buff == 0) { break; }                                                                         // did we find a null? stop printing description
       }  
