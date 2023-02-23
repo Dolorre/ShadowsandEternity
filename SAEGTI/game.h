@@ -108,6 +108,7 @@ void stateMenuPlay(uint16_t pc) {
            FX::drawBitmap(x[0],y[0],theEnd,0,dbmNormal);                                          // Display ending graphic
            FX::display();                                                                         // Display the end graphic
            endinganykey();                                                                        // Wait for ending anykey
+           gameState = STATE_MENU_MAIN;                                                           // Set the game state to the main menu
            stateMenuMain();                                                                       // Return to main menu
            return;                                                                                // quit out of the main game state
            
