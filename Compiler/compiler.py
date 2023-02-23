@@ -4,7 +4,7 @@
 import os
 
 # Source csv file: change csv_source to the file path of the .csv.
-csv_source = "E:\Documents\Arduboy FX Games\ArduBoyGTI\silence.csv"
+csv_source = "E:\Documents\Arduboy FX Games\Shadows and Eternity\SAE.csv"
 
 assert os.path.exists(csv_source), "File not found."
 
@@ -13,10 +13,10 @@ with open(csv_source, 'r') as source:
 print("Source csv file found!")
 
 # Destination bin file: change bin_source to the file path where you want the .bin.
-bin_source = "E:\Documents\Arduboy FX Games\ArduBoyGTI\silence.bin"
+bin_source = "E:\Documents\Arduboy FX Games\Shadows and Eternity\SAE.bin"
 
 # Destination txt file: change txt_source to the file path where you want the .txt.
-txt_source = "E:\Documents\Arduboy FX Games\ArduBoyGTI\silence.txt"
+txt_source = "E:\Documents\Arduboy FX Games\Shadows and Eternity\SAE.txt"
 
 rooms = []
 room_type = []
@@ -58,6 +58,17 @@ for i in range(0,len(file)):
              room_type.append("end")
              room_label.append(line[0])
              room_exits.append(['special','end'])
+       if line[2].upper() == "ENDING":
+             Line_text = []
+             Line_text = line[0:4]
+             binary = ""
+             description = ",".join(Line_text[3:]).rstrip()
+             description = description.replace("||",",")
+             binary = binary + description + chr(0)
+             rooms.append(binary)
+             room_type.append("ending")
+             room_label.append(line[0])
+             room_exits.append(['special','ending'])
        if line[2].upper() == "TEXT":
              Line_text = []
              Line_text = line[0:4]
@@ -91,6 +102,9 @@ for i in range(0,len(rooms)):
          size = size + 2
          size = size + len(rooms[i])
      if room_type[i] == "end":
+         size = size + 1
+         size = size + len(rooms[i])
+     if room_type[i] == "ending":
          size = size + 1
          size = size + len(rooms[i])
      if room_type[i] == "text":
@@ -128,6 +142,10 @@ for i in range(0,len(rooms)):
        compiled = compiled + chr(255) + chr(255)
        compiled = compiled + chr(0)
        compiled = compiled + rooms[i].rstrip()
+     if room_type[i] == "ending":
+       compiled = compiled + chr(255) + chr(255)
+       compiled = compiled + chr(21)
+       compiled = compiled + rooms[i].rstrip()
      if room_type[i] == "text":
        compiled = compiled + chr(255) + chr(255)
        compiled = compiled + chr(16)
@@ -154,20 +172,18 @@ print ("Beginning bin conversion.")
 
 b_source = open(bin_source,'r', encoding='utf-8', newline='') 
 
-bin_compiled = "const unsigned char gti[] PROGMEM = { "
+bin_compiled = "uint8_t gti = "
 
 col = 0
 
 while 1==1:
    data = b_source.read(1)
    if data == "": break
-   bin_compiled = bin_compiled + (str(ord(data))+",")
+   bin_compiled = bin_compiled + (str(ord(data))+" ")
    col = col + 1
    if col == 90000: 
       compiled = compiled + "\n"
       col = 0
-      
-bin_compiled = bin_compiled + "};"
 
 b_source.close()
 
@@ -177,8 +193,3 @@ to = open(txt_source, "w")
 to.write(bin_compiled)
 to.close()
 print ("Written to "+txt_source+".")
-
-base = 12722
-max = 28672
-size = max - base
-if len(compiled) > size:  print ("Warning: memory size exceeded by "+str(len(compiled) - size)+" bytes!")
