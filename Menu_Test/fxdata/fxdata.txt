@@ -1,9 +1,0 @@
-/******************************************************
-  Shadows and Eternity FX data file :
-******************************************************/
-image_t dolorreLogo = "../assets/dolorreLogo.png"
-image_t saeTitle = "../assets/saeTitle.png"
-image_t selectionLine = "../assets/selectionLine.png"
-image_t helpText = "../assets/helpText.png"
-image_t creditsText = "../assets/creditsText.png"
-image_t theEnd = "../assets/theEnd.png"
