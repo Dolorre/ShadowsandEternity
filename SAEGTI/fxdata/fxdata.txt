@@ -1,0 +1,11 @@
+/******************************************************
+  Shadows and Eternity FX data file :
+******************************************************/
+image_t dolorreLogo = "../assets/dolorreLogo.png"
+image_t saeTitle = "../assets/saeTitle.png"
+image_t selectionLine = "../assets/selectionLine.png"
+image_t helpText = "../assets/helpText.png"
+image_t creditsText = "../assets/creditsText.png"
+image_t theEnd = "../assets/theEnd.png"
+
+uint8_t gti = 255 255 16 65 32 115 116 114 105 110 103 32 111 102 32 116 101 120 116 0 255 255 21 65 110 100 32 116 104 101 121 32 97 108 108 32 108 105 118 101 100 32 104 97 112 112 105 108 121 32 101 118 101 114 32 97 102 116 101 114 46 0 
