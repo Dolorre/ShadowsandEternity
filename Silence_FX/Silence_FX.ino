@@ -52,15 +52,13 @@ startVM(0);
 void startVM(uint16_t pc) {
  while(1) {  
   FX::seekData(gti + pc);                                                                         // Search for selected byte
-  bt_a = FX::readPendingUInt8();
-  bt_b = FX::readEnd();
-  //NEW
-  uint16_t type = ((bt_a & 0xFF) << 8) | ((bt_b & 0xFF) << 0);                                    // Read in type of frame
+  uint16_t type = FX::readPendingLastUInt16();
+  bt_a = ((type >> 8) & 0xFF);
+  bt_b = ((type >> 0) & 0xFF);
   pc++;                                                                                           // bump program counter
   col = 0;                                                                                        // reset columns in text display
   if(type == 65535) {                                                                             // SPECIAL Frame Detected
      pc++;                                                                                        // bump program counter
-     //NEW
      FX::seekData(gti + pc);                                                                      // Search for selected byte
      uint8_t mode = FX::readEnd();                                                                // get the special packet mode
      
@@ -71,7 +69,6 @@ void startVM(uint16_t pc) {
        case 0:                                                                                    // Game Over handler
            while(1) {                                                                             // loop over text until we hit a null
              pc++;                                                                                // bump program counter
-             //NEW
              FX::seekData(gti + pc);                                                              // Search for selected byte
              uint8_t buff = FX::readEnd();                                                        // read a chracter
              printer(buff);                                                                       // print out the text using our text output handler
@@ -90,11 +87,10 @@ void startVM(uint16_t pc) {
            
        case 5:                                                                                    // Jump handler
            pc++;                                                                                  // bump the program counter
-           //NEW
            FX::seekData(gti + pc);                                                                // Search for selected byte
-           bt_a = FX::readPendingUInt8();
-           bt_b = FX::readEnd();
-           pc = ((bt_a & 0xFF) << 8) | ((bt_b & 0xFF) << 0);                                      // Set the program counter to the address in 16 bit field
+           pc = FX::readPendingLastUInt16();
+           bt_a = ((pc >> 8) & 0xFF);
+           bt_b = ((pc >> 0) & 0xFF);
            break;                                                                                 // switch break
            
        // 0x0D - Effects Library    
@@ -102,8 +98,8 @@ void startVM(uint16_t pc) {
        case 13:                                                                                   // Effects Handler
        #if SFXLIB == ON                                                                           // If our effects library is switched on
             pc++;                                                                                 // Bump program counter
-            //effect = pgm_read_byte_near(&(gti[pc]));                                              // Get effect type
-            effect = bt_a;                                                                          // Get effect type
+            FX::seekData(gti + pc);                                                               // Search for selected byte
+            effect = FX::readEnd();                                                               // Get effect type
             
             switch(effect) {                                                                      // Effect switcher
             
@@ -112,7 +108,7 @@ void startVM(uint16_t pc) {
                case 0:                                                                            // rumble handler
                    #if SOUND == ON                                                                // Is sound turned on?
                    for(int x = 60; x < 150; x++) {                                                // Low frequency sweep 
-                   sound.tone(x, 10);  delay(10); }                                       // Play our low frequency sweep
+                   sound.tone(x, 10);  delay(10); }                                               // Play our low frequency sweep
                    #endif                                                                         // end sound check
                    break;                                                                         // switch break
                   
@@ -134,7 +130,7 @@ void startVM(uint16_t pc) {
             }  
             pc++;                                                                                 // Bump program counter
        #else                                                                                      // Otherwise, is the SFX mode disabled?
-         pc++; pc++;                                                                          // Increment program counter so we dont lose position
+         pc++; pc++;                                                                              // Increment program counter so we don't lose position
        #endif
             break;                                                                                // switch break
 
@@ -143,7 +139,6 @@ void startVM(uint16_t pc) {
        case 16:                                                                                   // text handler
            while(1) {                                                                             // print some text until we find a null
              pc++;                                                                                // Bump program counter
-             //NEW
              FX::seekData(gti + pc);                                                              // Search for selected byte
              uint8_t buff = FX::readEnd();                                                        // Read a character
              printer(buff);                                                                       // Send text off to our printer 
@@ -155,7 +150,6 @@ void startVM(uint16_t pc) {
     }
   }
   
-  // We did not find a SPECIAL frame, so we assume it is a NORMAL frame (and per framing format, it must be)
   // We reuse the 'type' uint16_t variable as jump a's address
   
   else {    
@@ -163,15 +157,13 @@ void startVM(uint16_t pc) {
      // Jump A description buffer
     
       pc++;                                                                                                   // bump program counter
-      //NEW
       FX::seekData(gti + pc);                                                                                 // Search for selected byte
-      bt_a = FX::readPendingUInt8();
-      bt_b = FX::readEnd();
-      uint16_t alterexit = ((bt_a & 0xFF) << 8) | ((bt_b & 0xFF) << 0);                                       // get jump b address
+      uint16_t alterexit = FX::readPendingLastUInt16();
+      bt_a = ((alterexit >> 8) & 0xFF);
+      bt_b = ((alterexit >> 0) & 0xFF);
       pc++; pc++;                                                                                             // bump program counter
       int i = 0;                                                                                              // initalize i (to keep track of array position)
       while(1 == 1) {                                                                                         // fill jump a description buffer
-        //NEW
         FX::seekData(gti + pc);                                                                               // Search for selected byte
         uint8_t buff = FX::readEnd();                                                                         // get a character
         if(buff == 0) { exita[i] = 0; break; }                                                                // Is it null? append the null to array then stop
@@ -184,7 +176,6 @@ void startVM(uint16_t pc) {
       pc++;                                                                                                   // bump program counter
       i = 0;                                                                                                  // reset array position
       while(1 == 1) {                                                                                         // fill jump b description buffer 
-        //NEW                                                      
         FX::seekData(gti + pc);                                                                               // Search for selected byte
         uint8_t buff = FX::readEnd();                                                                         // get a character
         if(buff == 0) { exitb[i] = 0; break; }                                                                // Is it null? append the null to array then stop
@@ -198,7 +189,6 @@ void startVM(uint16_t pc) {
       
       while(1) {                                                                                              // print the main description text, null terminated
              pc++;                                                                                            // bump program counter
-             //NEW                                                 
              FX::seekData(gti + pc);                                                                          // Search for selected byte
              uint8_t buff = FX::readEnd();                                                                    // get character from main description
              printer(buff);                                                                                   // Print out our newest character
@@ -243,7 +233,8 @@ void startVM(uint16_t pc) {
       int selection = select();
       if(selection == 0) { pc = type; } 
       if(selection == 1) { pc = alterexit; } 
-      FX::display(CLEAR_BUFFER);
+      arduboy.clear(); 
+      FX::display();
       col = 0;
   }
 }
@@ -358,7 +349,7 @@ void anykey() {
    }
    delay(10);    
    }
-  FX::display(CLEAR_BUFFER); 
+  arduboy.clear(); FX::display();
   #if SERIAL == ON
   Serial.println("\n"); 
   #endif
