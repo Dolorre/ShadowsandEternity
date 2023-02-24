@@ -63,8 +63,6 @@ void stateMenuPlay(uint16_t pc) {
  while(1) {  
   FX::seekData(gti + pc);                                                                         // Search for selected byte
   uint16_t type = FX::readPendingLastUInt16();
-  bt_a = ((type >> 8) & 0xFF);
-  bt_b = ((type >> 0) & 0xFF);
   pc++;                                                                                           // bump program counter
   col = 0;                                                                                        // reset columns in text display
   if(type == 65535) {                                                                             // SPECIAL Frame Detected
@@ -108,6 +106,7 @@ void stateMenuPlay(uint16_t pc) {
            FX::drawBitmap(x[0],y[0],theEnd,0,dbmNormal);                                          // Display ending graphic
            FX::display();                                                                         // Display the end graphic
            endinganykey();                                                                        // Wait for ending anykey
+           col = 0;                                                                               // reset the columns (probably not needed)
            gameState = STATE_MENU_MAIN;                                                           // Set the game state to the main menu
            return;                                                                                // quit out of the main game state
            
@@ -117,8 +116,6 @@ void stateMenuPlay(uint16_t pc) {
            pc++;                                                                                  // bump the program counter
            FX::seekData(gti + pc);                                                                // Search for selected byte
            pc = FX::readPendingLastUInt16();
-           bt_a = ((pc >> 8) & 0xFF);
-           bt_b = ((pc >> 0) & 0xFF);
            break;                                                                                 // switch break
            
        // 0x0D - Effects Library    
@@ -187,8 +184,6 @@ void stateMenuPlay(uint16_t pc) {
       pc++;                                                                                                   // bump program counter
       FX::seekData(gti + pc);                                                                                 // Search for selected byte
       uint16_t alterexit = FX::readPendingLastUInt16();
-      bt_a = ((alterexit >> 8) & 0xFF);
-      bt_b = ((alterexit >> 0) & 0xFF);
       pc++; pc++;                                                                                             // bump program counter
       int i = 0;                                                                                              // initalize i (to keep track of array position)
       while(1 == 1) {                                                                                         // fill jump a description buffer
