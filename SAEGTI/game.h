@@ -109,7 +109,6 @@ void stateMenuPlay(uint16_t pc) {
            FX::display();                                                                         // Display the end graphic
            endinganykey();                                                                        // Wait for ending anykey
            gameState = STATE_MENU_MAIN;                                                           // Set the game state to the main menu
-           stateMenuMain();                                                                       // Return to main menu
            return;                                                                                // quit out of the main game state
            
        // 0x05 - Jump    
