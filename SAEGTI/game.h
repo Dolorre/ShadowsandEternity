@@ -58,9 +58,9 @@ void stateMenuCredits()
   if (arduboy.justPressed(A_BUTTON | B_BUTTON)) gameState = STATE_MENU_MAIN;
 }
 
-void stateMenuPlay(uint16_t pc) {
-  pc = 0;
- while(1) {  
+void stateMenuPlay() {
+  uint16_t pc = 0;
+ while(true) {  
   FX::seekData(gti + pc);                                                                         // Search for selected byte
   uint16_t type = FX::readPendingLastUInt16();
   pc++;                                                                                           // bump program counter
@@ -75,7 +75,7 @@ void stateMenuPlay(uint16_t pc) {
        // 0x00 - Game Over
 
        case 0:                                                                                    // Game Over handler
-           while(1) {                                                                             // loop over text until we hit a null
+           while(true) {                                                                          // loop over text until we hit a null
              pc++;                                                                                // bump program counter
              FX::seekData(gti + pc);                                                              // Search for selected byte
              uint8_t buff = FX::readEnd();                                                        // read a chracter
@@ -86,6 +86,7 @@ void stateMenuPlay(uint16_t pc) {
            #if USE_SERIAL == ON
            Serial.print("*GAME OVER*");                                                           // if the serial port is turned on, print message over serial
            #endif
+           FX::display();                                                                         // Display the game over text
            anykey();                                                                              // wait for anykey
            col = 0;                                                                               // reset the columns (probably not needed)
            return;                                                                                // quit out of the VM
@@ -94,7 +95,7 @@ void stateMenuPlay(uint16_t pc) {
        // 0x15 - Ending
 
        case 21:                                                                                   // Game ending handler
-           while(1) {                                                                             // loop over text until we hit a null
+           while(true) {                                                                          // loop over text until we hit a null
              pc++;                                                                                // bump program counter
              FX::seekData(gti + pc);                                                              // Search for selected byte
              uint8_t buff = FX::readEnd();                                                        // read a chracter
@@ -162,7 +163,7 @@ void stateMenuPlay(uint16_t pc) {
        // 0x10 - Display page of text and wait for any key
        
        case 16:                                                                                   // text handler
-           while(1) {                                                                             // print some text until we find a null
+           while(true) {                                                                          // print some text until we find a null
              pc++;                                                                                // Bump program counter
              FX::seekData(gti + pc);                                                              // Search for selected byte
              uint8_t buff = FX::readEnd();                                                        // Read a character
@@ -186,7 +187,7 @@ void stateMenuPlay(uint16_t pc) {
       uint16_t alterexit = FX::readPendingLastUInt16();
       pc++; pc++;                                                                                             // bump program counter
       int i = 0;                                                                                              // initalize i (to keep track of array position)
-      while(1 == 1) {                                                                                         // fill jump a description buffer
+      while(true) {                                                                                         // fill jump a description buffer
         FX::seekData(gti + pc);                                                                               // Search for selected byte
         uint8_t buff = FX::readEnd();                                                                         // get a character
         if(buff == 0) { exita[i] = 0; break; }                                                                // Is it null? append the null to array then stop
@@ -198,7 +199,7 @@ void stateMenuPlay(uint16_t pc) {
       
       pc++;                                                                                                   // bump program counter
       i = 0;                                                                                                  // reset array position
-      while(1 == 1) {                                                                                         // fill jump b description buffer 
+      while(true) {                                                                                           // fill jump b description buffer 
         FX::seekData(gti + pc);                                                                               // Search for selected byte
         uint8_t buff = FX::readEnd();                                                                         // get a character
         if(buff == 0) { exitb[i] = 0; break; }                                                                // Is it null? append the null to array then stop
@@ -210,7 +211,7 @@ void stateMenuPlay(uint16_t pc) {
  
       // Main description printing (since the description goes before the jump selections)
       
-      while(1) {                                                                                              // print the main description text, null terminated
+      while(true) {                                                                                              // print the main description text, null terminated
              pc++;                                                                                            // bump program counter
              FX::seekData(gti + pc);                                                                          // Search for selected byte
              uint8_t buff = FX::readEnd();                                                                    // get character from main description
@@ -233,7 +234,7 @@ void stateMenuPlay(uint16_t pc) {
       Serial.print("\nA] ");
       #endif
        x = 0;
-       while(1) { 
+       while(true) { 
              printer(exita[x]);
              if(exita[x] == 0) { break; } 
              x++; 
@@ -247,7 +248,7 @@ void stateMenuPlay(uint16_t pc) {
       #if USE_SERIAL == ON
       Serial.print("\nB] ");
       #endif      
-       while(1) { 
+       while(true) { 
              printer(exitb[x]);
              if(exitb[x] == 0) { break; } 
              x++;
