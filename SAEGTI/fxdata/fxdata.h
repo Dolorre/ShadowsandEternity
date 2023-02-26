@@ -6,8 +6,8 @@ using uint24_t = __uint24;
 
 // Initialize FX hardware using  FX::begin(FX_DATA_PAGE); in the setup() function.
 
-constexpr uint16_t FX_DATA_PAGE  = 0xff9f;
-constexpr uint24_t FX_DATA_BYTES = 24733;
+constexpr uint16_t FX_DATA_PAGE  = 0xff9e;
+constexpr uint24_t FX_DATA_BYTES = 24879;
 
 constexpr uint24_t dolorreLogo = 0x000000;
 constexpr uint16_t dolorreLogoWidth  = 128;
