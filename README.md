@@ -1,4 +1,4 @@
-# ShadowsandEternity
+# Shadows and Eternity
 Shadows and Eternity is a sci-fi text-based adventure game made for the Arduboy. Your goal is to survive the day, if you can.
 
 This also happens to be a resurrection project of spaceneedle’s GameTextInterpreter (GTI) engine. I’ve used the update provided by the wonderful Mr.Blinky. I’m also working to update the engine and make some changes.
