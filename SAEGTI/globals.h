@@ -23,7 +23,7 @@
 Arduboy2 arduboy;
 ArduboyTones sound(arduboy.audio.enabled);
 
-byte gameState = STATE_MENU_INTRO;     // start the game with the Dolorre logo
+byte gameState = STATE_MENU_INTRO;     // Start the game with the Dolorre logo
 byte menuSelection = STATE_MENU_PLAY;  // START menu item is pre-selected
 
 byte globalCounter = 0;
@@ -58,7 +58,7 @@ static uint8_t lineBuffer[linebufferSize];
 // Interpreter size tuning (turning off some interpreter support can save PROGMEM memory, but code must not contain related bytecodes (unless stated!)
 
 #define SOUND ON             // 574 bytes (If support is disabled, bytecode is skipped properly)
-#define USE_SERIAL OFF       // 182 bytes (no impact on bytecode interpreting)
+#define USE_SERIAL ON       // 182 bytes (no impact on bytecode interpreting)
 
 #define VARIABLES ON
 #define MUSIC ON
@@ -119,7 +119,7 @@ uint8_t select() {
     sound.tone(400, 50); delay(50);
     sound.tone(600, 50); delay(50); 
   #endif
-  while(1) { 
+  while(true) { 
    if(arduboy.pressed(B_BUTTON)) { return 1; } 
    if(arduboy.pressed(A_BUTTON)) { return 0; } 
    
@@ -149,7 +149,7 @@ void anykey() {
   #endif
     uint8_t c = 0;
     uint8_t blink = 0;  
-  while(1) { 
+  while(true) { 
    if(arduboy.pressed(B_BUTTON) || arduboy.pressed(A_BUTTON)) { break; } 
    #if SERIAL == ON
    if(Serial.available()) { Serial.read(); Serial.read(); Serial.read(); break; } 
@@ -184,7 +184,7 @@ void endinganykey() {
   #endif
     uint8_t c = 0;
     uint8_t blink = 0;  
-  while(1) { 
+  while(true) { 
    if(arduboy.pressed(B_BUTTON) || arduboy.pressed(A_BUTTON)) { break; } 
    #if SERIAL == ON
    if(Serial.available()) { Serial.read(); Serial.read(); Serial.read(); break; } 
