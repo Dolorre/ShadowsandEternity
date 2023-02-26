@@ -12,9 +12,6 @@ with open(csv_source, 'r') as source:
    file = source.readlines()
 print("Source csv file found!")
 
-# Destination bin file: change bin_source to the file path where you want the .bin.
-bin_source = "E:\Documents\Arduboy FX Games\Shadows and Eternity\SAE.bin"
-
 # Destination txt file: change txt_source to the file path where you want the .txt.
 txt_source = "E:\Documents\Arduboy FX Games\Shadows and Eternity\SAE.txt"
 
@@ -116,7 +113,7 @@ for i in range(0,len(rooms)):
          size = size + 2
      room_size.append(size) 
 
-print ("Calculated field lenghs.")
+print ("Calculated field lengths.")
 
 # calculate room addresses
 
@@ -161,31 +158,12 @@ for i in range(0,len(rooms)):
 
 print ("Compile complete.")
 
-o = open(bin_source,"w", encoding="utf-8")
-o.write(compiled)
-o.close()
-print ("Written to "+bin_source+".")
-print ("Final length was "+str(len(compiled))+".")
-
 # Bin to txt conversion
 print ("Beginning bin conversion.")
 
-b_source = open(bin_source,'r', encoding='utf-8', newline='') 
-
-bin_compiled = "uint8_t gti = "
-
-col = 0
-
-while 1==1:
-   data = b_source.read(1)
-   if data == "": break
-   bin_compiled = bin_compiled + (str(ord(data))+" ")
-   col = col + 1
-   if col == 90000: 
-      compiled = compiled + "\n"
-      col = 0
-
-b_source.close()
+bin_compiled = "uint8_t gti ="
+for byte in compiled:
+  bin_compiled += " {:n}".format(ord(byte))
 
 print ("Compile complete.")
 
